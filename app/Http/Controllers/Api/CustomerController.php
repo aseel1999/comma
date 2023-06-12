@@ -51,6 +51,7 @@ class CustomerController extends Controller
              'address' => 'required',
             'street_num' => 'nullable',
             'city' => 'nullable',
+            'state'=>'required',
             'postal_code' => 'nullable',
             'country_id' => ['nullable', 'exists:countries,id'],
             'type_id' => ['required', 'exists:customer_types,id'],
@@ -72,6 +73,7 @@ class CustomerController extends Controller
             'city' => 'required',
             'postal_code' => 'required',
             'country_id' => ['required', 'exists:countries,id'],
+            'state'=>'required',
         ]);
         $request->merge([
             'user_id' => Auth::guard('sanctum')->user()->id,
@@ -93,6 +95,7 @@ class CustomerController extends Controller
                         'street_num' => $request->billing_street_num,
                         'country_id' => $request->billing_country_id,
                         'city' => $request->billing_city,
+                        'state'=>$request->billing_state,
                         'postal_code' => $request->billing_postal_code,
                         'credit_limit' => $request->credit_limit,
                         'payment_term_id' => $request->payment_term_id,
@@ -105,6 +108,7 @@ class CustomerController extends Controller
                     'street_num' => $request->street_num,
                     'country_id' => $request->country_id,
                     'city' => $request->city,
+                    'state'=>$request->state,
                     'postal_code' => $request->postal_code,
                     'credit_limit' => $request->credit_limit,
                     'payment_term_id' => $request->payment_term_id,
@@ -129,6 +133,7 @@ class CustomerController extends Controller
                         "address" => $request->address,
                         "street_num" => $request->street_num,
                         "city" => $request->city,
+                        "state"=>$request->state,
                         "postal_code" => $request->postal_code,
                         "country_id" => $request->country_id,
                         "user_id" => $request->user_id,
@@ -139,6 +144,7 @@ class CustomerController extends Controller
                         "address" => $request->site_address,
                         "street_num" => $request->site_street_num,
                         "city" => $request->site_city,
+                        "state"=>$request->site_state,
                         "postal_code" => $request->site_postal_code,
                         "country_id" => $request->site_country_id,
                         "user_id" => $request->user_id,
@@ -188,6 +194,7 @@ class CustomerController extends Controller
                 'postal_code'=>$customer->postal_code,
                 'country'=>$customer->country->name,
                 'city'=>$customer->city,
+                'state'=>$customer->state,
                 'street_num'=>$customer->street_num,
                 
             ]);
@@ -211,6 +218,7 @@ class CustomerController extends Controller
             'street_num'=>$customer->street_num,
             'city'=>$customer->city,
             'country'=>$customer->country->name,
+            'state'=>$customer->state,
             
         ]);
     }
