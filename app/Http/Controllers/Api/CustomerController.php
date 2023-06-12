@@ -201,4 +201,17 @@ class CustomerController extends Controller
         }
 
     }
+    public function searchPost(Request $request){
+        $customer = Customer::where('user_id', authUser('sanctum')->id)
+        ->where('postal_code', 'Like', '%' . $request->q . '%')
+        ->first();
+        return response()->json([
+            'status' => true,
+            'postal_code'=>$customer->postal_code,
+            'street_num'=>$customer->street_num,
+            'city'=>$customer->city,
+            'country'=>$customer->country->name,
+            
+        ]);
+    }
 }
