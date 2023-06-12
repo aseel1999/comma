@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Customer;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -47,11 +48,11 @@ class CustomerController extends Controller
             'first_name'=>'nullable',
             'last_name'=>'nullable',
             'name' => 'nullable',
-            'address' => 'nullable',
+             'address' => 'required',
             'street_num' => 'nullable',
             'city' => 'nullable',
             'postal_code' => 'nullable',
-            'country_id' => 'nullable',
+            'country_id' => ['nullable', 'exists:countries,id'],
             'type_id' => ['required', 'exists:customer_types,id'],
             'tax_id' => ['nullable', 'exists:tax_settings,id'],
         ]);
@@ -66,11 +67,11 @@ class CustomerController extends Controller
             'name' => 'required_if:type_id,==,2',
             'first_name'=>'required_if:type_id,==,1',
             'last_name'=>'required_if:type_id,==,1',
-            //'address'=>'required_if:type_id,==,2',
+            'address'=>'required_if:type_id,==,1|required_if:type_id,==,2',
             'street_num' =>'required',
             'city' => 'required',
             'postal_code' => 'required',
-            'country_id' => 'required',
+            'country_id' => ['required', 'exists:countries,id'],
         ]);
         $request->merge([
             'user_id' => Auth::guard('sanctum')->user()->id,
@@ -82,7 +83,7 @@ class CustomerController extends Controller
 
             DB::beginTransaction();
             //create customer
-            $customer = Customer::create($request->only('type_id','country_id','postal_code','city','street_num','name','last_name','first_name','user_id'));
+            $customer = Customer::create($request->only('type_id','country_id','postal_code','city','address','street_num','name','last_name','first_name','user_id'));
 
             // create billing details
             if ($request->billing_details == 'no') {
@@ -176,5 +177,28 @@ class CustomerController extends Controller
             DB::rollBack();
             return $e;
         }
+    }
+    public function showAddress($id){
+        $customer=Customer::where('id',$id)->first();
+        $site=Site::where('customer_id',$customer->id)->first();
+        if($customer->address==$site->address){
+            return response()->json([
+                'status' => true,
+                'message' => 'your address',
+                'postal_code'=>$customer->postal_code,
+                'country'=>$customer->country->name,
+                'city'=>$customer->city,
+                'street_num'=>$customer->street_num,
+                
+            ]);
+        }
+        else{
+            return response()->json([
+                'status' => true,
+                'message' => 'there is not match customer address',
+                
+            ]);
+        }
+
     }
 }

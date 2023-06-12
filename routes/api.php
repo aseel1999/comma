@@ -56,6 +56,7 @@ Route::middleware(['auth:sanctum','verified'])->group(function () {
     // customer routes
     Route::get('customers/get', [CustomerController::class, 'index'])->name('customers.get');
     Route::get('customers/{id}/customer', [CustomerController::class, 'show'])->name('customers.details');
+    Route::get('customers/{id}', [CustomerController::class, 'showAddress'])->name('customers.address');
     Route::post('customers/create', [CustomerController::class, 'store'])->name('customers.store');
 
     Route::post('site-contact/create', [SiteContactController::class, 'store']);
