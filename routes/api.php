@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum','verified'])->group(function () {
     Route::post('contact/create', [ContactController::class, 'store']);
 
     // Form Template
-    Route::get('forms/templates', [FormTemplateController::class, 'index'])->middleware('auth:sanctum');
+    Route::get('forms/templates', [FormTemplateController::class, 'index'])->middleware('auth:sanctum')->name('template');
     Route::post('forms/templates/store', [FormTemplateController::class, 'store'])->middleware('auth:sanctum');
     Route::get('forms/templates/{id}/show', [FormTemplateController::class, 'show'])->middleware('auth:sanctum');
     Route::put('forms/templates/{id}/update', [FormTemplateController::class, 'update'])->middleware('auth:sanctum');

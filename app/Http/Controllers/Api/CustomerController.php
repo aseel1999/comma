@@ -227,16 +227,25 @@ class CustomerController extends Controller
     public function multiSearch(Request $request){
        
         $contact = Contact::join('customers', 'contacts.customer_id', '=', 'customers.id')
-    ->select( 'contacts.f_name', 'contacts.l_name', 'contacts.phone', 'customers.name','customers.postal_code')
-    ->where('contacts.user_id', authUser('sanctum')->id)
-    ->where(function ($query) use ($request) {
-        $query->where('contacts.phone', 'like', '%' . $request->q . '%')
-            ->orWhere('customers.name', 'like', '%' .  $request->q . '%')
-            ->orWhere('customers.postal_code', 'like', '%' .  $request->q . '%');
+                         ->join('countries', 'customers.country_id', '=', 'countries.id')
+                        ->select( 'contacts.f_name', 'contacts.l_name', 'contacts.phone', 'customers.name','customers.street_num','customers.city','customers.state','countries.name AS country','customers.postal_code')
+                           ->where('contacts.user_id', authUser('sanctum')->id)
+                           ->where(function ($query) use ($request) {
+                              $query->where('contacts.phone', 'like', '%' . $request->q . '%')
+                                 ->orWhere('customers.name', 'like', '%' .  $request->q . '%')
+                                      ->orWhere('customers.postal_code', 'like', '%' .  $request->q . '%');
     })
     ->first();
         if($contact){
-        return responseJson(true, 'successfully', $contact);
+            return response()->json([
+                'status' => true,
+                'message' => 'Successfully',
+                'data' => $contact,
+                'choices' => [
+                    'yes' => route('template'),
+                    'no' => false
+                ],
+            ]);
         }
         else{
             return response()->json([
