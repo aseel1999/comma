@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use Illuminate\Database\Query\Builder;
 use App\Models\Customer;
 use App\Models\Site;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\CustomerResource;
+
 
 class CustomerController extends Controller
 {
@@ -48,7 +50,7 @@ class CustomerController extends Controller
             'first_name'=>'nullable',
             'last_name'=>'nullable',
             'name' => 'nullable',
-             'address' => 'required',
+            'address' => 'required',
             'street_num' => 'nullable',
             'city' => 'nullable',
             'state'=>'required',
@@ -222,4 +224,29 @@ class CustomerController extends Controller
             
         ]);
     }
+    public function multiSearch(Request $request){
+       
+        $contact = Contact::join('customers', 'contacts.customer_id', '=', 'customers.id')
+    ->select( 'contacts.f_name', 'contacts.l_name', 'contacts.phone', 'customers.name','customers.postal_code')
+    ->where('contacts.user_id', authUser('sanctum')->id)
+    ->where(function ($query) use ($request) {
+        $query->where('contacts.phone', 'like', '%' . $request->q . '%')
+            ->orWhere('customers.name', 'like', '%' .  $request->q . '%')
+            ->orWhere('customers.postal_code', 'like', '%' .  $request->q . '%');
+    })
+    ->first();
+        if($contact){
+        return responseJson(true, 'successfully', $contact);
+        }
+        else{
+            return response()->json([
+                'status' => false,
+                'message' => 'there is no result',
+                'add customer'=>route('customers.store'),
+                
+            ]);
+        }
+
+    }
+    
 }
