@@ -237,15 +237,22 @@ class CustomerController extends Controller
     })
     ->first();
         if($contact){
-            return response()->json([
-                'status' => true,
-                'message' => 'Successfully',
-                'data' => $contact,
-                'choices' => [
-                    'yes' => route('template'),
-                    'no' => false
-                ],
-            ]);
+            if ($request->choice == 'yes') {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Successfully',
+                    'data' => $contact,
+                    'choice' => route('template'),
+                ]);
+            } else {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Successfully',
+                    'data' => $contact,
+                    'choice' => false,
+                ]);
+            }
+            
         }
         else{
             return response()->json([
